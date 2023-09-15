@@ -4,6 +4,8 @@ from flask import Flask
 from config import DevelopmentConfig
 from flaskr.extensions import db, migrate, api
 
+from flaskr.resources.quiz import bp as quiz_bp
+
 
 def create_app(testing_config=None):
     app = Flask(__name__)
@@ -16,5 +18,7 @@ def create_app(testing_config=None):
     db.init_app(app)
     migrate.init_app(app, db, compare_type=True)
     api.init_app(app)
+
+    api.register_blueprint(quiz_bp, url_prefix="/api")
 
     return app
