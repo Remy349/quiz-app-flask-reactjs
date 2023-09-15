@@ -18,4 +18,4 @@ class QuizController:
         except SQLAlchemyError as e:
             abort(500, message=str(e))
 
-        return {}
+        return {"message": ""}
