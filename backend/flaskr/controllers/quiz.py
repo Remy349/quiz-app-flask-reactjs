@@ -19,3 +19,11 @@ class QuizController:
             abort(500, message=str(e))
 
         return {"message": "Cuestionario creado exitosamente."}
+
+    def delete_quiz_by_id(self, quiz_id):
+        quiz = db.get_or_404(QuizModel, quiz_id)
+
+        db.session.delete(quiz)
+        db.session.commit()
+
+        return {"message": "Cuestionario eliminado exitosamente."}

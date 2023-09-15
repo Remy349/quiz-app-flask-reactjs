@@ -8,6 +8,14 @@ bp = Blueprint("quizzes", __name__, description="Operations on quizzes")
 controller = QuizController()
 
 
+@bp.route("/quizzes/<int:quiz_id>")
+class Quiz(MethodView):
+    @bp.response(204)
+    def delete(self, quiz_id):
+        """Delete a quiz by ID"""
+        return controller.delete_quiz_by_id(quiz_id)
+
+
 @bp.route("/quizzes")
 class Quizzes(MethodView):
     @bp.response(200, QuizSchema(many=True))
