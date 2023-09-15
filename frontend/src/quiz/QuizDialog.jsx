@@ -2,11 +2,11 @@ import { Button } from '@/components/ui/button'
 import { PlusSquare } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { useToast } from '@/components/ui/use-toast'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -15,21 +15,41 @@ import { useState } from 'react'
 
 const QUIZAPP_API_URL = import.meta.env.VITE_QUIZAPP_API_URL
 
-export function QuizDialog() {
-  const [] = useState()
+const wait = () => new Promise((resolve) => setTimeout(resolve, 1000))
 
-  const handleCreateQuiz = async () => {
+export function QuizDialog() {
+  const [titleInput, setTitleInput] = useState('')
+  const [descriptionInput, setDescriptionInput] = useState('')
+  const [open, setOpen] = useState(false)
+
+  const { toast } = useToast()
+
+  const handleCreateQuiz = async (event) => {
+    wait().then(() => setOpen(false))
+
+    event.preventDefault()
+
     const res = await fetch(`${QUIZAPP_API_URL}/quizzes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(),
+      body: JSON.stringify({
+        title: titleInput,
+        description: descriptionInput,
+      }),
     })
+
+    const data = await res.json()
+
+    setTitleInput('')
+    setDescriptionInput('')
+
+    toast({ title: 'Exito!', description: data.message })
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <PlusSquare className='mr-2 h-4 w-4' />
@@ -43,12 +63,15 @@ export function QuizDialog() {
             Pon a prueba el conocimiento de tus usuarios.
           </DialogDescription>
         </DialogHeader>
-        <div className='grid gap-y-4'>
+        <form onSubmit={handleCreateQuiz} className='grid gap-y-4'>
           <Input
             name='title'
             id='title'
             placeholder='Titulo del Cuestionario'
             autoComplete='off'
+            required
+            value={titleInput}
+            onChange={(event) => setTitleInput(event.target.value)}
           />
           <Textarea
             name='description'
@@ -56,11 +79,12 @@ export function QuizDialog() {
             rows='6'
             className='resize-none'
             placeholder='Descripcíon del Cuestionario'
+            required
+            value={descriptionInput}
+            onChange={(event) => setDescriptionInput(event.target.value)}
           />
-        </div>
-        <DialogFooter>
-          <Button onClick={handleCreateQuiz}>Confirmar</Button>
-        </DialogFooter>
+          <Button type='submit'>Confirmar</Button>
+        </form>
       </DialogContent>
     </Dialog>
   )

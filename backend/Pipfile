@@ -10,7 +10,6 @@ flask-sqlalchemy = "==3.1.1"
 flask-migrate = "==4.0.5"
 flask-smorest = "==0.42.1"
 alembic = "==1.12.0"
-apispec = {version = "==6.3.0", extras = ["marshmallow"]}
 blinker = "==1.6.2"
 click = "==8.1.7"
 greenlet = "==2.0.2"
@@ -24,6 +23,8 @@ sqlalchemy = "==2.0.20"
 typing-extensions = "==4.7.1"
 webargs = "==8.3.0"
 werkzeug = "==2.3.7"
+flask-cors = "==4.0.0"
+apispec = {version = "==6.3.0", extras = ["marshmallow"]}
 
 [dev-packages]
 
