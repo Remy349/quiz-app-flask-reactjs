@@ -17,7 +17,7 @@ const QUIZAPP_API_URL = import.meta.env.VITE_QUIZAPP_API_URL
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 1000))
 
-export function QuizDialog() {
+export function QuizDialog({ getQuizzes }) {
   const [titleInput, setTitleInput] = useState('')
   const [descriptionInput, setDescriptionInput] = useState('')
   const [open, setOpen] = useState(false)
@@ -46,6 +46,8 @@ export function QuizDialog() {
     setDescriptionInput('')
 
     toast({ title: 'Exito!', description: data.message })
+
+    getQuizzes()
   }
 
   return (

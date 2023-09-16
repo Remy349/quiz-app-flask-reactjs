@@ -14,15 +14,13 @@ import { Trash } from 'lucide-react'
 
 const QUIZAPP_API_URL = import.meta.env.VITE_QUIZAPP_API_URL
 
-export function QuizAlertDialog({ quizId }) {
+export function QuizAlertDialog({ quizId, getQuizzes }) {
   const handleDeleteQuiz = async () => {
-    const res = await fetch(`${QUIZAPP_API_URL}/quizzes/${quizId}`, {
+    await fetch(`${QUIZAPP_API_URL}/quizzes/${quizId}`, {
       method: 'DELETE',
     })
 
-    const data = await res.json()
-
-    console.log(data)
+    getQuizzes()
   }
 
   return (
