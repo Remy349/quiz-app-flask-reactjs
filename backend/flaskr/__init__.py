@@ -5,6 +5,7 @@ from config import DevelopmentConfig
 from flaskr.extensions import db, migrate, api, cors
 
 from flaskr.resources.quiz import bp as quiz_bp
+from flaskr.resources.question import bp as question_bp
 
 
 def create_app(testing_config=None):
@@ -21,5 +22,6 @@ def create_app(testing_config=None):
     cors.init_app(app)
 
     api.register_blueprint(quiz_bp, url_prefix="/api")
+    api.register_blueprint(question_bp, url_prefix="/api")
 
     return app
