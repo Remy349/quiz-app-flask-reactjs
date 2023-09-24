@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { Settings } from 'lucide-react'
@@ -13,18 +12,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useEffect, useState } from 'react'
 
 const QUIZAPP_API_URL = import.meta.env.VITE_QUIZAPP_API_URL
 
-export function Index() {
+export default function Index() {
   const [quizzes, setQuizzes] = useState([])
 
   const getQuizzes = async () => {
     const res = await fetch(`${QUIZAPP_API_URL}/quizzes`)
+    const quizzes = await res.json()
 
-    const data = await res.json()
-
-    setQuizzes(data)
+    setQuizzes(quizzes)
   }
 
   useEffect(() => {

@@ -29,7 +29,7 @@ export function QuizDialog({ getQuizzes }) {
 
     event.preventDefault()
 
-    const res = await fetch(`${QUIZAPP_API_URL}/quizzes`, {
+    await fetch(`${QUIZAPP_API_URL}/quizzes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,12 +40,10 @@ export function QuizDialog({ getQuizzes }) {
       }),
     })
 
-    const data = await res.json()
-
     setTitleInput('')
     setDescriptionInput('')
 
-    toast({ title: 'Exito!', description: data.message })
+    toast({ title: 'Exito!', description: 'Cuestionario creado exitosamente.' })
 
     getQuizzes()
   }

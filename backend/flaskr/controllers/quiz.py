@@ -9,6 +9,9 @@ class QuizController:
     def get_quizzes(self):
         return db.session.execute(db.select(QuizModel)).scalars()
 
+    def get_quiz_by_id(self, quiz_id):
+        return db.get_or_404(QuizModel, quiz_id)
+
     def create_quiz(self, quiz_data):
         quiz = QuizModel(**quiz_data)
 
@@ -18,7 +21,7 @@ class QuizController:
         except SQLAlchemyError as e:
             abort(500, message=str(e))
 
-        return {"message": "Cuestionario creado exitosamente."}
+        return quiz
 
     def delete_quiz_by_id(self, quiz_id):
         quiz = db.get_or_404(QuizModel, quiz_id)

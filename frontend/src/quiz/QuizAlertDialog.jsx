@@ -11,13 +11,21 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Trash } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
 
 const QUIZAPP_API_URL = import.meta.env.VITE_QUIZAPP_API_URL
 
 export function QuizAlertDialog({ quizId, getQuizzes }) {
+  const { toast } = useToast()
+
   const handleDeleteQuiz = async () => {
     await fetch(`${QUIZAPP_API_URL}/quizzes/${quizId}`, {
       method: 'DELETE',
+    })
+
+    toast({
+      title: 'Exito!',
+      description: 'Cuestionario eliminado exitosamente.',
     })
 
     getQuizzes()

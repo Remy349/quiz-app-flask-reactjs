@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Quiz } from './routes/quiz'
-import { Index } from './routes/index'
+import Quiz, { loader as quizLoader } from './routes/quiz'
+import Index from './routes/index.jsx'
 
 const router = createBrowserRouter([
   {
@@ -16,8 +16,9 @@ const router = createBrowserRouter([
         element: <Index />,
       },
       {
-        path: '/quizzes/:quiz_id',
+        path: '/quizzes/:quizId',
         element: <Quiz />,
+        loader: quizLoader
       },
     ],
   },
