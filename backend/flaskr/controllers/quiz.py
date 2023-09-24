@@ -29,4 +29,4 @@ class QuizController:
         db.session.delete(quiz)
         db.session.commit()
 
-        return {"message": "Cuestionario eliminado exitosamente."}
+        return
