@@ -25,17 +25,48 @@ export async function loader({ params }) {
 
 export default function Quiz() {
   const { quiz } = useLoaderData()
-  const [questionOptionFields, setQuestionOptionFields] = useState([''])
+  const [questionTitle, setQuestionTitle] = useState('')
+  const [questionOptionFields, setQuestionOptionFields] = useState([
+    { questionOption: '', isCorrect: false },
+  ])
 
   const handleAddQuestionOptionField = () => {
-    setQuestionOptionFields([...questionOptionFields, ''])
+    setQuestionOptionFields([
+      ...questionOptionFields,
+      { questionOption: '', isCorrect: false },
+    ])
   }
 
   const handleDeleteQuestionOptionField = (index) => {
+    if (questionOptionFields.length > 1) {
+      const newQuestionoptionFields = [...questionOptionFields]
+      newQuestionoptionFields.splice(index, 1)
+
+      setQuestionOptionFields(newQuestionoptionFields)
+    }
+  }
+
+  const handleQuestionOptionChange = (index, event) => {
     const newQuestionoptionFields = [...questionOptionFields]
-    newQuestionoptionFields.splice(index, 1)
+    newQuestionoptionFields[index].questionOption = event.target.value
 
     setQuestionOptionFields(newQuestionoptionFields)
+  }
+
+  const handleIsCorrectChange = (index, event) => {
+    const newQuestionoptionFields = [...questionOptionFields]
+    newQuestionoptionFields[index].isCorrect = event.target.checked
+
+    setQuestionOptionFields(newQuestionoptionFields)
+  }
+
+  const handleQuestionTitleChange = (event) => {
+    setQuestionTitle(event.target.value)
+  }
+
+  const handleCreateQuestion = (event) => {
+    event.preventDefault()
+    console.log(questionOptionFields)
   }
 
   return (
@@ -54,7 +85,10 @@ export default function Quiz() {
           </CardHeader>
           <CardContent>
             <div>
-              <form className='grid w-full gap-y-6'>
+              <form
+                onSubmit={handleCreateQuestion}
+                className='grid w-full gap-y-6'
+              >
                 <div className='flex flex-col space-y-2'>
                   <Label className='text-base' htmlFor='questionTitle'>
                     Pregunta
@@ -63,6 +97,8 @@ export default function Quiz() {
                     type='text'
                     id='questionTitle'
                     name='questionTitle'
+                    value={questionTitle}
+                    onChange={handleQuestionTitleChange}
                     autoComplete='off'
                     required
                   />
@@ -72,17 +108,33 @@ export default function Quiz() {
                     <div key={index} className='grid gap-y-4'>
                       <div className='flex flex-col space-y-2'>
                         <Label className='text-base' htmlFor='questionOption'>
-                          Opción
+                          Opción {index + 1}
                         </Label>
                         <Textarea
-                          id='questionOption'
-                          name='questionOption'
                           rows='2'
+                          value={field.questionOption}
+                          onChange={(event) =>
+                            handleQuestionOptionChange(index, event)
+                          }
                           required
                         />
                       </div>
-                      <div>
+                      <div className='flex items-center gap-x-6'>
+                        <div className='inline-flex items-center space-x-2'>
+                          <Input
+                            type='checkbox'
+                            className='w-4 h-4 cursor-pointer'
+                            checked={field.isCorrect}
+                            onChange={(event) =>
+                              handleIsCorrectChange(index, event)
+                            }
+                          />
+                          <Label>Respuesta Correcta</Label>
+                        </div>
                         <Button
+                          disabled={
+                            questionOptionFields.length > 1 ? false : true
+                          }
                           type='submit'
                           variant='destructive'
                           onClick={() => handleDeleteQuestionOptionField(index)}
@@ -91,6 +143,7 @@ export default function Quiz() {
                           Eliminar Opción
                         </Button>
                       </div>
+                      <Separator className='mt-6' />
                     </div>
                   ))}
                 </div>
@@ -105,7 +158,6 @@ export default function Quiz() {
                 <Button type='submit'>Confirmar</Button>
               </form>
             </div>
-            <Separator orientation='vertical' />
             <div></div>
           </CardContent>
         </Card>
