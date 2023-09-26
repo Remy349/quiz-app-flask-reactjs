@@ -6,7 +6,7 @@ from marshmallow import Schema, fields
 class PlainAnswerSchema(Schema):
     id = fields.Int(dump_only=True)
     text = fields.Str(required=True)
-    is_correct = fields.Bool(dump_only=True)
+    is_correct = fields.Bool(required=True)
 
 
 class PlainQuizSchema(Schema):
@@ -18,7 +18,7 @@ class PlainQuizSchema(Schema):
 class PlainQuestionSchema(Schema):
     id = fields.Int(dump_only=True)
     title = fields.Str(required=True)
-    answers = fields.List(fields.Nested(PlainAnswerSchema()), dump_only=True)
+    answers = fields.List(fields.Nested(PlainAnswerSchema()))
 
 
 # --- SCHEMAS

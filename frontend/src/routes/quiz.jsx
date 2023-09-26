@@ -1,5 +1,5 @@
 import { ChevronsLeft, PlusSquare, Trash } from 'lucide-react'
-import { Link, useLoaderData } from 'react-router-dom'
+import { Link, useLoaderData, Form } from 'react-router-dom'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Card,
@@ -8,6 +8,12 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -25,15 +31,16 @@ export async function loader({ params }) {
 
 export default function Quiz() {
   const { quiz } = useLoaderData()
+  const { questions } = quiz
   const [questionTitle, setQuestionTitle] = useState('')
   const [questionOptionFields, setQuestionOptionFields] = useState([
-    { questionOption: '', isCorrect: false },
+    { text: '', is_correct: false },
   ])
 
   const handleAddQuestionOptionField = () => {
     setQuestionOptionFields([
       ...questionOptionFields,
-      { questionOption: '', isCorrect: false },
+      { text: '', is_correct: false },
     ])
   }
 
@@ -48,14 +55,14 @@ export default function Quiz() {
 
   const handleQuestionOptionChange = (index, event) => {
     const newQuestionoptionFields = [...questionOptionFields]
-    newQuestionoptionFields[index].questionOption = event.target.value
+    newQuestionoptionFields[index].text = event.target.value
 
     setQuestionOptionFields(newQuestionoptionFields)
   }
 
   const handleIsCorrectChange = (index, event) => {
     const newQuestionoptionFields = [...questionOptionFields]
-    newQuestionoptionFields[index].isCorrect = event.target.checked
+    newQuestionoptionFields[index].is_correct = event.target.checked
 
     setQuestionOptionFields(newQuestionoptionFields)
   }
@@ -64,9 +71,27 @@ export default function Quiz() {
     setQuestionTitle(event.target.value)
   }
 
-  const handleCreateQuestion = (event) => {
+  const handleCreateQuestion = async (event) => {
     event.preventDefault()
-    console.log(questionOptionFields)
+
+    const question = {
+      title: questionTitle,
+      answers: [...questionOptionFields],
+      quiz_id: quiz.id,
+    }
+
+    await fetch(`${QUIZAPP_API_URL}/quizzes/${quiz.id}/questions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(question),
+    })
+
+    setQuestionTitle('')
+    setQuestionOptionFields([{ text: '', is_correct: false }])
+
+    window.location.reload()
   }
 
   return (
@@ -83,8 +108,8 @@ export default function Quiz() {
             <CardTitle className='mb-2'>{quiz.title}</CardTitle>
             <CardDescription>{quiz.description}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div>
+          <CardContent className='grid grid-cols-2'>
+            <div className='pr-6 border-r-gray-200 border-r-2'>
               <form
                 onSubmit={handleCreateQuestion}
                 className='grid w-full gap-y-6'
@@ -112,7 +137,7 @@ export default function Quiz() {
                         </Label>
                         <Textarea
                           rows='2'
-                          value={field.questionOption}
+                          value={field.text}
                           onChange={(event) =>
                             handleQuestionOptionChange(index, event)
                           }
@@ -124,7 +149,7 @@ export default function Quiz() {
                           <Input
                             type='checkbox'
                             className='w-4 h-4 cursor-pointer'
-                            checked={field.isCorrect}
+                            checked={field.is_correct}
                             onChange={(event) =>
                               handleIsCorrectChange(index, event)
                             }
@@ -158,7 +183,65 @@ export default function Quiz() {
                 <Button type='submit'>Confirmar</Button>
               </form>
             </div>
-            <div></div>
+            <div className='pl-6'>
+              {questions.length < 1 ? (
+                <h3 className='text-2xl font-semibold'>
+                  Cuestionario sin contenido para mostrar.
+                </h3>
+              ) : (
+                <div>
+                  <h3 className='text-2xl font-semibold mb-4'>
+                    Preguntas del Cuestionario
+                  </h3>
+                  <div>
+                    <Accordion type='multiple' className='w-full'>
+                      {questions.map((question) => (
+                        <AccordionItem
+                          value={`item-${question.id + 1}`}
+                          key={question.id}
+                        >
+                          <div>
+                            <AccordionTrigger>
+                              {question.title}
+                            </AccordionTrigger>
+                            <Form
+                              method='DELETE'
+                              className='mb-6'
+                              action={`delete/${question.id}`}
+                            >
+                              <Button type='submit' variant='destructive'>
+                                <Trash className='mr-2 h-4 w-4' />
+                                Eliminar
+                              </Button>
+                            </Form>
+                          </div>
+                          <AccordionContent>
+                            <ul className='list-decimal pl-8 grid gap-y-6'>
+                              {question.answers.map((answer) => (
+                                <li key={answer.id}>
+                                  <div className='flex flex-col gap-y-2'>
+                                    {answer.text}
+                                    {answer.is_correct ? (
+                                      <span className='font-semibold text-emerald-600'>
+                                        Verdadero
+                                      </span>
+                                    ) : (
+                                      <span className='font-semibold text-red-500'>
+                                        Falso
+                                      </span>
+                                    )}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </section>

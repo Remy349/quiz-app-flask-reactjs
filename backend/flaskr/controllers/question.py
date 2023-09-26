@@ -2,7 +2,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask_smorest import abort
 from flaskr.extensions import db
 
-from flaskr.models import QuestionModel, QuizModel
+from flaskr.models import QuestionModel, QuizModel, AnswerModel
 
 
 class QuestionController:
@@ -11,12 +11,20 @@ class QuestionController:
         return quiz.questions
 
     def create_question_in_quiz(self, question_data, quiz_id):
+        title = question_data["title"]
+        answers = question_data["answers"]
+
         quiz = db.get_or_404(QuizModel, quiz_id)
 
-        question = QuestionModel(**question_data)
+        question = QuestionModel(title=title, quiz_id=quiz_id)
 
         try:
             quiz.questions.append(question)
+
+            for data in answers:
+                answer = AnswerModel(**data)
+                question.answers.append(answer)
+
             db.session.commit()
         except IntegrityError as e:
             abort(400, message=str(e))

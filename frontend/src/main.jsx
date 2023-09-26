@@ -5,6 +5,7 @@ import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Quiz, { loader as quizLoader } from './routes/quiz'
 import Index from './routes/index.jsx'
+import { action as deleteAction } from './routes/delete.jsx'
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,11 @@ const router = createBrowserRouter([
       {
         path: '/quizzes/:quizId',
         element: <Quiz />,
-        loader: quizLoader
+        loader: quizLoader,
+      },
+      {
+        path: '/quizzes/:quizId/delete/:questionId',
+        action: deleteAction,
       },
     ],
   },
